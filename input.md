@@ -1,3 +1,5 @@
+[Git repo](https://github.com/blakethepatton/xss-quickfix)
+
 <script>alert('xss')</script>
 > <script>alert('blockquote')</script> 
 
@@ -40,16 +42,9 @@
 > > > 
 > > > > 🤔
 
-``` 
-    <img src="http://placekitten.com/50/50" alt='kitten'>
-    <img src="http://placekitten.com/50/50">
-    <a href="http://placekitten.com/">Localhost</a>
-```
+# MDExtra testing {#md-extra}
 
-<img src="https://placekitten.com/50/50" onerror="alert(/DOM-XSS/)" alt="image alt">
-<img src="https://placekitten.com/50/50">
-
-<img src="/" onerror="alert(/DOM-XSS/)" alt="hello">
+## Links {#md-links}
 
 <a href="https://blakethepatton.com" id="mysite2">My website</a>
 [MD My website](https://blakethepatton.com){#mysite}
@@ -65,9 +60,28 @@
     [MDStyled Link](https://scotch.io){.btn .btn-lg #styled-md-link .btn-success}
     <a href="https://scotch.io" class="btn btn-lg btn-success" id="styled-link">Styled Link</a>
 ```
+## images {#md-images}
 
+<img src="http://placekitten.com/50/50" alt='kitten' id="kitten1" class=" img-circle">
+![md Kitten](http://placekitten.com/50/50){#kitten2 .img-rounded}
 
+```markdown
+    <img src="http://placekitten.com/50/50" alt='kitten' id="kitten1" class=" img-circle">
+    ![md Kitten](http://placekitten.com/50/50){#kitten2 .img-rounded}
+```
 
+# XSS Testing {#xss}
+
+``` 
+    <img src="http://placekitten.com/50/50" alt='kitten'>
+    <img src="http://placekitten.com/50/50">
+    <a href="http://placekitten.com/">Localhost</a>
+```
+
+<img src="https://placekitten.com/50/50" onerror="alert(/DOM-XSS/)" alt="image alt">
+<img src="https://placekitten.com/50/50">
+
+<img src="/" onerror="alert(/DOM-XSS/)" alt="hello">
 
 <a href="javascript:alert('hello')">Hello</a>
 

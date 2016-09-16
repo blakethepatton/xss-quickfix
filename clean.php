@@ -1,25 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Blake Patton - Freelance Developer</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-</head>
-
-<body>
 <?PHP
+include "header.html";
 require "oembed.php";
 require "simple_html_dom.php";
 
@@ -124,9 +104,10 @@ if(count($html->find('img'))>0){
     unset($e);
 }
 
+// parse the page
 $response = $parsedown->setMarkupEscaped(true)->parse($autoEmbed->parse($html));
 
-// now that all the images and links are generated... restore the url's and or code
+// now that all the images and links are generated... restore non-markdownified with their old content.
 if(count($a)>0){
     foreach($a as $link){
         // inside of code tag
@@ -141,6 +122,7 @@ if(count($img)>0){
     }
 }
 
+// reload the document with MD run.
 $html->load($response, true, false);
 if(count($html->find('a'))>0){
     foreach($html->find('a') as $e){
@@ -153,7 +135,7 @@ if(count($html->find('a'))>0){
 if(count($html->find('img'))>0){
     foreach($html->find('img') as $e){
         if(stripos($e->attr['src'], 'javascript:')!==false){
-            // gets any links that aren't in code blocks and have javascript in them
+            // gets any image sources that aren't in code blocks and have javascript in them
             $e->outertext = htmlspecialchars($e->outertext, ENT_HTML5|ENT_QUOTES);
         } 
     }
@@ -162,8 +144,5 @@ if(count($html->find('img'))>0){
 
 echo $html;
 
-
+include "footer.html";
 ?>
-</body>
-
-</html>
