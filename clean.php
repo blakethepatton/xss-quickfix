@@ -24,30 +24,100 @@ require "oembed.php";
 require "Parsedown.php";
 require "simple_html_dom.php";
 
-
 $content = file_get_contents("input.md");
-
-$html = new simple_html_dom();
-$html->load($content, true, false);
-foreach($html->find('a') as $e)
-{
-    $e->outertext = "[".$e->innertext."](".$e->href.")";
-}
-unset($e);
-foreach($html->find('img') as $e){
-    (isset($e->attr['src'])) ? $src = $e->attr['src'] : $src='';
-    (isset($e->attr['alt'])) ? $alt = $e->attr['alt'] : $alt='';
-    $e->outertext = "![".$alt."](".$src.")";
-}
-unset($e);
-
-
-
 $autoEmbed = new App\Libraries\AutoEmbed();
 $parsedown = new Parsedown();
-$response = $parsedown->setMarkupEscaped(true)->setUrlsLinked(false)->parse($autoEmbed->parse($html));
+$html = new simple_html_dom();
 
-echo $response;
+
+$html->load($content, true, false);
+
+// convert html links to md flavored links
+$a = array(); //save original element info
+if(count($html->find('a'))>0){
+    $i = 0;
+    foreach($html->find('a') as $e)
+    {
+        $url = $old = $e->href;
+        $query = parse_url($url, PHP_URL_QUERY);
+        // Returns a string if the URL has parameters or NULL if not
+        if ($query) {
+            // $url .= '&__php_a_id='.$i;
+        } else {
+            // $url .= '?__php_a_id='.$i;
+        }
+        $new = "[".$e->innertext."](".$url.")";
+        $a[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$old);
+        $e->outertext = $new;
+        $i++;
+    }
+    unset($e);
+}
+// convert html img tags to md flavored img tags
+$img = array(); //save original element info
+if(count($html->find('img'))>0){
+    $i = 0;
+    foreach($html->find('img') as $e){
+        (isset($e->attr['src'])) ? $src = $e->attr['src'] : $src='';
+        (isset($e->attr['alt'])) ? $alt = $e->attr['alt'] : $alt='';
+
+        $url = $src;
+        $query = parse_url($url, PHP_URL_QUERY);
+        // Returns a string if the URL has parameters or NULL if not
+        if ($query) {
+            // $url .= '&__php_img_id='.$i;
+        } else {
+            // $url .= '?__php_img_id='.$i;
+        }
+        $new = "![".$alt."](".$url.")";
+        $img[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$src);
+        $e->outertext = $new;
+        $i++;
+    }
+    // save on resources.
+    unset($e);
+}
+
+$response = $parsedown->setMarkupEscaped(true)->parse($autoEmbed->parse($html));
+
+// now that all the images and links are generated... restore the url's and or code
+if(count($a)>0){
+    foreach($a as $link){
+        // inside of code tag
+        $response = str_replace($link['new'], htmlspecialchars($link['original'], ENT_HTML5|ENT_QUOTES), $response);
+        // it's been formatted, fix the url back to the original
+        // $response = str_replace($link['url'], $link['oldurl'], $response);
+    }
+}
+if(count($img)>0){
+    foreach($img as $image){
+        // inside of code tag
+        $response = str_replace($image['new'], htmlspecialchars($image['original'], ENT_HTML5|ENT_QUOTES), $response);
+        // it's been formatted, fix the url back to the original
+        // $response = str_replace($image['url'], $image['oldurl'], $response);
+    }
+}
+
+$html->load($response, true, false);
+if(count($html->find('a'))>0){
+    foreach($html->find('a') as $e){
+        if(stripos($e->href, 'javascript:')!==false){
+            // gets any links that aren't in code blocks and have javascript in them
+            $e->outertext = htmlspecialchars($e->outertext, ENT_HTML5|ENT_QUOTES);
+        } 
+    }
+}
+if(count($html->find('img'))>0){
+    foreach($html->find('img') as $e){
+        if(stripos($e->attr['src'], 'javascript:')!==false){
+            // gets any links that aren't in code blocks and have javascript in them
+            $e->outertext = htmlspecialchars($e->outertext, ENT_HTML5|ENT_QUOTES);
+        } 
+    }
+}
+
+
+echo $html;
 
 
 ?>
