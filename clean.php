@@ -84,9 +84,7 @@ if(count($html->find('a'))>0){
 
         if($class!=null || $id!=null){
             $new .= ' {'.trim($class.' '.$id).'}';
-        }
-        echo $new;
-        
+        }        
 
         //oldurl exists because I was playing around with modifying it. could potentially be removed.
         $a[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$url);
@@ -95,27 +93,36 @@ if(count($html->find('a'))>0){
     }
     unset($e);
 }
+
 // convert html img tags to md flavored img tags
 $img = array(); //save original element info
 if(count($html->find('img'))>0){
     $i = 0;
     foreach($html->find('img') as $e){
-        (isset($e->attr['src'])) ? $src = $e->attr['src'] : $src='';
-        (isset($e->attr['alt'])) ? $alt = $e->attr['alt'] : $alt='';
+        $url   = (isset($e->attr['src'])) ? $e->attr['src'] : '';
+        $text  = (isset($e->attr['alt'])) ? $e->attr['alt'] : '';
+        $class = (isset($e->attr['class'])) ? trim($e->attr['class']) : '';
+        $id    = (isset($e->attr['id'])) ? trim($e->attr['id']) : '';
+
+        //setup the class
+        $class = str_replace(' ', ' .', $class);
+        (strlen($class)>0) ? $class = '.'.$class : $class=null;
+        //setup the id
+        (strlen($id)>0) ? $id = '#'.$id : $id = null;
+
+        $new = "![".$text."](".$url.")";
+
+        if($class!=null || $id!=null){
+            $new .= ' {'.trim($class.' '.$id).'}';
+        } 
         
-
-        echo $class.$id;
-
-        $url = $src;
-        $new = "![".$alt."](".$url.")";
-        $img[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$src);
+        $img[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext);
         $e->outertext = $new;
         $i++;
     }
     // save on resources.
     unset($e);
 }
-//exit();
 
 $response = $parsedown->setMarkupEscaped(true)->parse($autoEmbed->parse($html));
 
