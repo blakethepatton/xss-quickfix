@@ -23,11 +23,39 @@
 require "oembed.php";
 require "Parsedown.php";
 require "simple_html_dom.php";
+require "ParsedownFilter.php";
 
 $content = file_get_contents("input.md");
 $autoEmbed = new App\Libraries\AutoEmbed();
-$parsedown = new Parsedown();
+//$parsedown = new Parsedown();
 $html = new simple_html_dom();
+$parsedown = new ParsedownFilter( 'myFilter' );
+
+function myFilter( &$el ){
+
+    switch( $el[ 'name' ] ){
+        case 'a':
+
+            $url = $el[ 'attributes' ][ 'href' ];
+
+            /***
+                If there is no protocol handler, and the link is not an open protocol address, 
+                the links must be relative so we can return as there is nothing to do.
+            ***/
+
+            if( strpos( $url, '://' ) === false )
+                if( ( ( $url[ 0 ] == '/' ) && ( $url[ 1 ] != '/' ) ) || ( $url[ 0 ] != '/' ) ){ return; }
+
+
+            if( strpos( $url, $_SERVER["SERVER_NAME"] ) === false ){
+                $el[ 'attributes' ][ 'rel' ] = 'nofollow';
+                $el[ 'attributes' ][ 'target' ] = '_blank';
+            }
+            break;
+
+    }
+}
+
 
 
 $html->load($content, true, false);

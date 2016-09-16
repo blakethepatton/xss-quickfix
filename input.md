@@ -52,6 +52,7 @@
 <img src="/" onerror="alert(/DOM-XSS/)" alt="hello">
 
 <a href="https://blakethepatton.com">My website</a>
+<a href="https://scotch.io">Your website</a>
 
 <a href="javascript:alert('hello')">Hello</a>
 
