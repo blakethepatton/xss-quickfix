@@ -37,11 +37,14 @@ function getBetweenStr($string, $start, $end)
 
 $content = file_get_contents("input.md");
 
+$content = str_replace('&lt;', '&amp~lt;', $content);
 $content = str_replace('<', '&lt;', $content);
 
 $autoEmbed = new App\Libraries\AutoEmbed();
 $parsedown = new Parsedown();
 $response = $parsedown->parse($autoEmbed->parse($content));
+$response = str_replace('&amp;amp~lt;', '&amp;lt;', $response);
+
 
 $html = new simple_html_dom();
 $html->load($response, true, false);
