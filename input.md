@@ -14,6 +14,9 @@ Node.js is one of the emerging technologies to write real-time applications usin
 `<script>alert('code tag')</script>`
 
 ```<html>tag</html>```
+```
+    $response = $parsedown->parse($autoEmbed->parse($content));
+```
 
 [AdonisJs](http://adonisjs.com) is inspired by a Php Framework called [Laravel](http://laravel.com). It borrows the concepts of Dependency injection and service providers to write beautiful code which is testable to its core.
 

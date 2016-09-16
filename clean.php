@@ -44,9 +44,7 @@ $parsedown = new Parsedown();
 $response = $parsedown->parse($autoEmbed->parse($content));
 
 $html = new simple_html_dom();
-$html->load($response);
-//$html = str_get_html($response);
-//var_dump($html);
+$html->load($response, true, false);
 
 foreach($html->find('code') as $e){
     $e->innertext = str_replace('&amp;lt;', '&lt;', $e->innertext);
