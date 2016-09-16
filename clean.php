@@ -25,35 +25,30 @@ require "Parsedown.php";
 require "simple_html_dom.php";
 
 
-function getBetweenStr($string, $start, $end)
-{
-    $string = " ".$string;
-    $ini = strpos($string,$start);
-    if ($ini == 0) return "";
-    $ini += strlen($start);    
-    $len = strpos($string,$end,$ini) - $ini;
-    return substr($string,$ini,$len);
-}
-
 $content = file_get_contents("input.md");
 
-$content = str_replace('&lt;', '&amp~lt;', $content);
-$content = str_replace('<', '&lt;', $content);
+$html = new simple_html_dom();
+$html->load($content, true, false);
+foreach($html->find('a') as $e)
+{
+    $e->outertext = "[".$e->innertext."](".$e->href.")";
+}
+unset($e);
+foreach($html->find('img') as $e){
+    (isset($e->attr['src'])) ? $src = $e->attr['src'] : $src='';
+    (isset($e->attr['alt'])) ? $alt = $e->attr['alt'] : $alt='';
+    $e->outertext = "![".$alt."](".$src.")";
+}
+unset($e);
+
+
 
 $autoEmbed = new App\Libraries\AutoEmbed();
 $parsedown = new Parsedown();
-$response = $parsedown->parse($autoEmbed->parse($content));
-$response = str_replace('&amp;amp~lt;', '&amp;lt;', $response);
+$response = $parsedown->setMarkupEscaped(true)->setUrlsLinked(false)->parse($autoEmbed->parse($html));
 
+echo $response;
 
-$html = new simple_html_dom();
-$html->load($response, true, false);
-
-foreach($html->find('code') as $e){
-    $e->innertext = str_replace('&amp;lt;', '&lt;', $e->innertext);
-}
-
-echo $html;
 
 ?>
 </body>

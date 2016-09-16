@@ -25,7 +25,35 @@ Node.js is one of the emerging technologies to write real-time applications usin
     &gt;
 
 ```
+```markup 
+&lt;script src="hello.js">&lt;/script> 
+``` 
 &lt;script>alert('blahahahal')&lt;/script>
+
+%3cscript %3e alert('hello1'); %3c/script%3e
+
+\x3cscript\x3e alert('hello2') \x3c/script\x3e
+
+[hi there](javascript:alert('hi there'))
+> block quote
+> 
+> that continues
+> 
+> on multiple lines
+> 
+> > and also has a quote
+> > 
+> > within the quote
+> > 
+> > > sorta like quoteception
+> > > 
+> > > > 🤔
+
+<img src="https://lorempixel.com/10/10" onerror="alert(/DOM-XSS/)" alt="image alt">
+
+<img src="/img/ipad.png" onerror="alert(/DOM-XSS/)" alt="hello">
+
+<a href="https://blakethepatton.com">My website</a>
 
 [AdonisJs](http://adonisjs.com) is inspired by a Php Framework called [Laravel](http://laravel.com). It borrows the concepts of Dependency injection and service providers to write beautiful code which is testable to its core.
 
