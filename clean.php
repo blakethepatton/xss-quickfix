@@ -21,15 +21,17 @@
 <body>
 <?PHP
 require "oembed.php";
-require "Parsedown.php";
 require "simple_html_dom.php";
+
+require "Parsedown.php";
+require "ParsedownExtra.php";
 require "ParsedownFilter.php";
 
 $content = file_get_contents("input.md");
 $autoEmbed = new App\Libraries\AutoEmbed();
 //$parsedown = new Parsedown();
 $html = new simple_html_dom();
-$parsedown = new ParsedownFilter( 'myFilter' );
+$parsedown = new ParsedownFilterExtra( 'myFilter' );
 
 function myFilter( &$el ){
 
@@ -66,16 +68,28 @@ if(count($html->find('a'))>0){
     $i = 0;
     foreach($html->find('a') as $e)
     {
-        $url = $old = $e->href;
-        $query = parse_url($url, PHP_URL_QUERY);
-        // Returns a string if the URL has parameters or NULL if not
-        if ($query) {
-            // $url .= '&__php_a_id='.$i;
-        } else {
-            // $url .= '?__php_a_id='.$i;
+
+        $url   = (isset($e->href)) ? $e->href : '';
+        $class = (isset($e->attr['class'])) ? trim($e->attr['class']) : '';
+        $id    = (isset($e->attr['id'])) ? trim($e->attr['id']) : '';
+        $text  = (isset($e->innertext)) ? $e->innertext : $url;
+
+        //setup the class
+        $class = str_replace(' ', ' .', $class);
+        (strlen($class)>0) ? $class = '.'.$class : $class=null;
+        //setup the id
+        (strlen($id)>0) ? $id = '#'.$id : $id = null;
+
+        $new = "[".$text."](".$url.")";
+
+        if($class!=null || $id!=null){
+            $new .= ' {'.trim($class.' '.$id).'}';
         }
-        $new = "[".$e->innertext."](".$url.")";
-        $a[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$old);
+        echo $new;
+        
+
+        //oldurl exists because I was playing around with modifying it. could potentially be removed.
+        $a[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$url);
         $e->outertext = $new;
         $i++;
     }
@@ -88,15 +102,11 @@ if(count($html->find('img'))>0){
     foreach($html->find('img') as $e){
         (isset($e->attr['src'])) ? $src = $e->attr['src'] : $src='';
         (isset($e->attr['alt'])) ? $alt = $e->attr['alt'] : $alt='';
+        
+
+        echo $class.$id;
 
         $url = $src;
-        $query = parse_url($url, PHP_URL_QUERY);
-        // Returns a string if the URL has parameters or NULL if not
-        if ($query) {
-            // $url .= '&__php_img_id='.$i;
-        } else {
-            // $url .= '?__php_img_id='.$i;
-        }
         $new = "![".$alt."](".$url.")";
         $img[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$src);
         $e->outertext = $new;
@@ -105,6 +115,7 @@ if(count($html->find('img'))>0){
     // save on resources.
     unset($e);
 }
+//exit();
 
 $response = $parsedown->setMarkupEscaped(true)->parse($autoEmbed->parse($html));
 
@@ -113,16 +124,13 @@ if(count($a)>0){
     foreach($a as $link){
         // inside of code tag
         $response = str_replace($link['new'], htmlspecialchars($link['original'], ENT_HTML5|ENT_QUOTES), $response);
-        // it's been formatted, fix the url back to the original
-        // $response = str_replace($link['url'], $link['oldurl'], $response);
+        
     }
 }
 if(count($img)>0){
     foreach($img as $image){
         // inside of code tag
         $response = str_replace($image['new'], htmlspecialchars($image['original'], ENT_HTML5|ENT_QUOTES), $response);
-        // it's been formatted, fix the url back to the original
-        // $response = str_replace($image['url'], $image['oldurl'], $response);
     }
 }
 

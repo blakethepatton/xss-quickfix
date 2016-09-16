@@ -41,7 +41,7 @@
 			return parent::element( $Element );
 		}
 	};
-	/*
+	
 	class ParsedownFilterExtra extends ParsedownExtra{
 	
 		private $tagCallback;
@@ -71,5 +71,5 @@
 			//Return result using modified values.
 			return parent::element( $Element );
 		}
-	};	*/
+	};	
 ?>

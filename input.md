@@ -51,14 +51,29 @@
 
 <img src="/" onerror="alert(/DOM-XSS/)" alt="hello">
 
-<a href="https://blakethepatton.com">My website</a>
+<a href="https://blakethepatton.com" id="mysite2">My website</a>
+[MD My website](https://blakethepatton.com){#mysite}
 <a href="https://scotch.io">Your website</a>
+[MDStyled Link](https://scotch.io){.btn .btn-lg #styled-md-link .btn-success}
+<a href="https://scotch.io" class="btn btn-lg btn-success" id="styled-link">Styled Link</a>
+
+```markdown
+    //non-formatted links
+    <a href="https://blakethepatton.com" id="mysite2">My website</a>
+    [MD My website](https://blakethepatton.com){#mysite}
+    <a href="https://scotch.io">Your website</a>
+    [MDStyled Link](https://scotch.io){.btn .btn-lg #styled-md-link .btn-success}
+    <a href="https://scotch.io" class="btn btn-lg btn-success" id="styled-link">Styled Link</a>
+```
+
+
+
 
 <a href="javascript:alert('hello')">Hello</a>
 
 <img src="javascript:alert('hello')" alt='hello'>
 
-[hello](JavaScript:alert('hello'))
+[hello](JavaScript:alert('hello')){ }
 
 ![hello](JavaScript:alert('hello'))
 
