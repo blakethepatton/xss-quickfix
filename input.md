@@ -58,7 +58,8 @@
     [MD My website](https://blakethepatton.com){#mysite}
     <a href="https://scotch.io">Your website</a>
     [MDStyled Link](https://scotch.io){.btn .btn-lg #styled-md-link .btn-success}
-    <a href="https://scotch.io" class="btn btn-lg btn-success" id="styled-link">Styled Link</a>
+    <a href="https://scotch.io" class="btn btn-lg btn-success" >Styled Link</a>
+    [Styled Link](https://scotch.io){.btn .btn-lg .btn-success}
 ```
 ## images {#md-images}
 

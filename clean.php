@@ -45,20 +45,18 @@ $html->load($content, true, false);
 // convert html links to md flavored links
 $a = array(); //save original element info
 if(count($html->find('a'))>0){
-    $i = 0;
     foreach($html->find('a') as $e)
     {
-
         $url   = (isset($e->href)) ? $e->href : '';
+        $text  = (isset($e->innertext)) ? $e->innertext : $url;
         $class = (isset($e->attr['class'])) ? trim($e->attr['class']) : '';
         $id    = (isset($e->attr['id'])) ? trim($e->attr['id']) : '';
-        $text  = (isset($e->innertext)) ? $e->innertext : $url;
 
         //setup the class
         $class = str_replace(' ', ' .', $class);
-        (strlen($class)>0) ? $class = '.'.$class : $class=null;
+        $class = (strlen($class)>0) ? '.'.$class : null;
         //setup the id
-        (strlen($id)>0) ? $id = '#'.$id : $id = null;
+        $id    = (strlen($id)>0) ? '#'.$id : null;
 
         $new = "[".$text."](".$url.")";
 
@@ -66,18 +64,16 @@ if(count($html->find('a'))>0){
             $new .= ' {'.trim($class.' '.$id).'}';
         }        
 
-        //oldurl exists because I was playing around with modifying it. could potentially be removed.
-        $a[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext, 'oldurl'=>$url);
+        $a[] = array('new'=>$new, 'original'=>$e->outertext);
         $e->outertext = $new;
-        $i++;
     }
     unset($e);
 }
 
 // convert html img tags to md flavored img tags
+
 $img = array(); //save original element info
 if(count($html->find('img'))>0){
-    $i = 0;
     foreach($html->find('img') as $e){
         $url   = (isset($e->attr['src'])) ? $e->attr['src'] : '';
         $text  = (isset($e->attr['alt'])) ? $e->attr['alt'] : '';
@@ -86,9 +82,9 @@ if(count($html->find('img'))>0){
 
         //setup the class
         $class = str_replace(' ', ' .', $class);
-        (strlen($class)>0) ? $class = '.'.$class : $class=null;
+        $class = (strlen($class)>0) ? '.'.$class : null;
         //setup the id
-        (strlen($id)>0) ? $id = '#'.$id : $id = null;
+        $id    = (strlen($id)>0) ? '#'.$id : null;
 
         $new = "![".$text."](".$url.")";
 
@@ -96,9 +92,8 @@ if(count($html->find('img'))>0){
             $new .= ' {'.trim($class.' '.$id).'}';
         } 
         
-        $img[$i] = array('new'=>$new, 'url'=>$url, 'original'=>$e->outertext);
+        $img[] = array('new'=>$new, 'original'=>$e->outertext);
         $e->outertext = $new;
-        $i++;
     }
     // save on resources.
     unset($e);
