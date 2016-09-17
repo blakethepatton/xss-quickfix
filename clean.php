@@ -1,17 +1,22 @@
 <?PHP
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 include "header.html";
-require "oembed.php";
-require "simple_html_dom.php";
+require "libs/oembed.php";
+require "libs/Parsedown.php";
+require "libs/ParsedownExtra.php";
+require "libs/ParsedownFilter.php";
+require_once 'libs/HTMLPurifier.standalone.php';
 
-require "Parsedown.php";
-require "ParsedownExtra.php";
-require "ParsedownFilter.php";
-
-$content = file_get_contents("input.md");
+$content = file_get_contents("markdownWithHtml.md");
 $autoEmbed = new App\Libraries\AutoEmbed();
 //$parsedown = new Parsedown();
-$html = new simple_html_dom();
 $parsedown = new ParsedownFilterExtra( 'myFilter' );
+
+    
+$purifier = new HTMLPurifier();
+
 
 function myFilter( &$el ){
 
@@ -38,106 +43,11 @@ function myFilter( &$el ){
     }
 }
 
+$response = $parsedown->parse($autoEmbed->parse($content));
 
+$clean_html = $purifier->purify($response);
 
-$html->load($content, true, false);
-
-// convert html links to md flavored links
-$a = array(); //save original element info
-if(count($html->find('a'))>0){
-    foreach($html->find('a') as $e)
-    {
-        $url   = (isset($e->href)) ? $e->href : '';
-        $text  = (isset($e->innertext)) ? $e->innertext : $url;
-        $class = (isset($e->attr['class'])) ? trim($e->attr['class']) : '';
-        $id    = (isset($e->attr['id'])) ? trim($e->attr['id']) : '';
-
-        //setup the class
-        $class = str_replace(' ', ' .', $class);
-        $class = (strlen($class)>0) ? '.'.$class : null;
-        //setup the id
-        $id    = (strlen($id)>0) ? '#'.$id : null;
-
-        $new = "[".$text."](".$url.")";
-
-        if($class!=null || $id!=null){
-            $new .= ' {'.trim($class.' '.$id).'}';
-        }        
-
-        $a[] = array('new'=>$new, 'original'=>$e->outertext);
-        $e->outertext = $new;
-    }
-    unset($e);
-}
-
-// convert html img tags to md flavored img tags
-
-$img = array(); //save original element info
-if(count($html->find('img'))>0){
-    foreach($html->find('img') as $e){
-        $url   = (isset($e->attr['src'])) ? $e->attr['src'] : '';
-        $text  = (isset($e->attr['alt'])) ? $e->attr['alt'] : '';
-        $class = (isset($e->attr['class'])) ? trim($e->attr['class']) : '';
-        $id    = (isset($e->attr['id'])) ? trim($e->attr['id']) : '';
-
-        //setup the class
-        $class = str_replace(' ', ' .', $class);
-        $class = (strlen($class)>0) ? '.'.$class : null;
-        //setup the id
-        $id    = (strlen($id)>0) ? '#'.$id : null;
-
-        $new = "![".$text."](".$url.")";
-
-        if($class!=null || $id!=null){
-            $new .= ' {'.trim($class.' '.$id).'}';
-        } 
-        
-        $img[] = array('new'=>$new, 'original'=>$e->outertext);
-        $e->outertext = $new;
-    }
-    // save on resources.
-    unset($e);
-}
-
-// parse the page
-$response = $parsedown->setMarkupEscaped(true)->parse($autoEmbed->parse($html));
-
-// now that all the images and links are generated... restore non-markdownified with their old content.
-if(count($a)>0){
-    foreach($a as $link){
-        // inside of code tag
-        $response = str_replace($link['new'], htmlspecialchars($link['original'], ENT_HTML5|ENT_QUOTES), $response);
-        
-    }
-}
-if(count($img)>0){
-    foreach($img as $image){
-        // inside of code tag
-        $response = str_replace($image['new'], htmlspecialchars($image['original'], ENT_HTML5|ENT_QUOTES), $response);
-    }
-}
-
-// reload the document with MD run.
-$html->load($response, true, false);
-if(count($html->find('a'))>0){
-    foreach($html->find('a') as $e){
-        if(stripos($e->href, 'javascript:')!==false){
-            // gets any links that aren't in code blocks and have javascript in them
-            $e->outertext = htmlspecialchars($e->outertext, ENT_HTML5|ENT_QUOTES);
-        } 
-    }
-}
-if(count($html->find('img'))>0){
-    foreach($html->find('img') as $e){
-        if(stripos($e->attr['src'], 'javascript:')!==false){
-            // gets any image sources that aren't in code blocks and have javascript in them
-            $e->outertext = htmlspecialchars($e->outertext, ENT_HTML5|ENT_QUOTES);
-        } 
-    }
-}
-
-
-echo $html;
+echo $clean_html;
 
 include "footer.html";
 ?>
