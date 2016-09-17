@@ -3,7 +3,7 @@
 namespace App\Libraries;
 
 /**
- * Class to parse URLs & embed remote content vie oEmbed
+ * Class to parse URLs & embed remote content via oEmbed
  *
  * @example
  *
