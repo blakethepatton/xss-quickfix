@@ -14,11 +14,22 @@ class SuperParser
 	private $input;
 
 	public function __construct(){
-		$this->mdParser = new ParsedownFilterExtra( 'filter' );
-		// this is ugly but I'm not sure how to make it better
-		function filter(&$el){
-			switch( $el[ 'name' ] ){
-        	case 'a':
+		$this->mdParser = new ParsedownFilterExtra( array($this, 'filter') );
+		$this->autoEmbed = new App\Libraries\AutoEmbed();
+		$this->html = new simple_html_dom();
+		$this->images = array();
+		$this->links = array();
+	}
+	public function parse($input){
+		$this->input = $input;
+		$this->before();
+		$this->parser();
+		$this->after();
+		return $this->input;
+	}
+	public function filter(&$el){
+		switch( $el[ 'name' ] ){
+	    	case 'a':
 	            $url = $el[ 'attributes' ][ 'href' ];
 
 	            /***
@@ -35,19 +46,7 @@ class SuperParser
 	                $el[ 'attributes' ][ 'target' ] = '_blank';
 	            }
 	            break;
-        	}
-		}
-		$this->autoEmbed = new App\Libraries\AutoEmbed();
-		$this->html = new simple_html_dom();
-		$this->images = array();
-		$this->links = array();
-	}
-	public function parse($input){
-		$this->input = $input;
-		$this->before();
-		$this->parser();
-		$this->after();
-		return $this->input;
+    	}
 	}
 	private function before(){
 		$html = $this->html->load($this->input, true, false);
