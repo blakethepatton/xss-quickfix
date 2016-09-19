@@ -41,6 +41,12 @@
 > > > sorta like quoteception
 > > > 
 > > > > 🤔
+> > > 
+> > > and code within blockquotes?
+> > > 
+> > > This works: `<script>alert('non-encoded tags')</script>`
+> > > 
+> > > This doesn't work: <script>alert('non-encoded tags')</script>
 
 # MDExtra testing {#md-extra}
 
@@ -99,3 +105,16 @@
         <a href="javascript:alert('hello')">Good day</a>
     </div>
 ```
+
+
+<iframe src="http://blakethepatton.com"></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VcDy8HEg1QY" frameborder="0" allowfullscreen></iframe>
+<iframe height='265' scrolling='no' src='//codepen.io/devildrey33/embed/EgKGaa/?height=265&theme-id=0&default-tab=js,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/devildrey33/pen/EgKGaa/'>Sinusoidal</a> by Josep Antoni Bover Comas (<a href='http://codepen.io/devildrey33'>@devildrey33</a>) on <a href='http://codepen.io'>CodePen</a>.
+</iframe>
+<iframe src="https://embed.plnkr.co/43m1gq/"></iframe>
+<iframe src="https://jsfiddle.net/k2n7koa4/embedded/"></iframe>
+<iframe src="http://cssdeck.com/labs/full/lyd1w2nh"></iframe>
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">When you&#39;re in the middle of something but you suddenly realise you&#39;re old AF. <a href="https://t.co/33C38elvDh">pic.twitter.com/33C38elvDh</a></p>&mdash; Death Star PR (@DeathStarPR) <a href="https://twitter.com/DeathStarPR/status/777651589993467904">September 18, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+#### 
+<iframe src="https://widget-prime.rafflecopter.com/classic/aff53f5/main.html"></iframe>

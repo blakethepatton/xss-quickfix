@@ -9,13 +9,21 @@ require "libs/ParsedownExtra.php";
 require "libs/ParsedownFilter.php";
 require_once 'libs/HTMLPurifier.standalone.php';
 
-$content = file_get_contents("markdownWithHtml.md");
+$content = file_get_contents("input.md");
 $autoEmbed = new App\Libraries\AutoEmbed();
 //$parsedown = new Parsedown();
 $parsedown = new ParsedownFilterExtra( 'myFilter' );
 
+$cfg = HTMLPurifier_Config::createDefault();
+
+$cfg->set('HTML.SafeIframe', true);
+$cfg->set('URI.SafeIframeRegexp', 
+    '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/|codepen\.io|embed\.plnkr\.co|jsfiddle\.net|widget-prime\.rafflecopter\.com)%'
+    ); //allow YouTube and Vimeo
+
     
-$purifier = new HTMLPurifier();
+$purifier = new HTMLPurifier($cfg);
+
 
 
 function myFilter( &$el ){
