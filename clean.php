@@ -53,6 +53,8 @@ function myFilter( &$el ){
 
 $response = $parsedown->parse($autoEmbed->parse($content));
 
+//echo $response; 
+
 $clean_html = $purifier->purify($response);
 
 echo $clean_html;
